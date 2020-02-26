@@ -1,24 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+const Parser = require('rss-parser');
+const parser = new Parser();
 
 function App() {
+  const [data, setData] = useState({});
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const feed = await parser.parseURL(
+        'https://cors-anywhere.herokuapp.com/https://www.fazerfoodco.se/modules/MenuRss/MenuRss/CurrentDay?costNumber=6410&language=sv'
+      );
+      const day = feed.items[0];
+      setData(day);
+    };
+    fetchMenu();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <h1>Dagens Lunch</h1>
+      {data.content && (
+        <div dangerouslySetInnerHTML={{ __html: data.content }} />
+      )}
     </div>
   );
 }
